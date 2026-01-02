@@ -1,0 +1,5 @@
+.admin-theme .submit-btn,
+.admin-theme .view-btn,
+.admin-theme .logout-btn {
+  background: #0277bd !important;
+}
