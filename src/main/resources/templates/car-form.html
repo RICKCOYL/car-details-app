@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Details - Form</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-box">
+            <h1>CAR DETAILS FORM</h1>
+
+            <form method="POST" th:action="@{/car/add}" th:object="${car}">
+                <div class="form-group">
+                    <label for="vehicleMake">VEHICLE</label>
+                    <input type="text" id="vehicleMake" th:field="*{vehicleMake}" 
+                           placeholder="Enter vehicle make" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="model">MODEL</label>
+                    <input type="text" id="model" th:field="*{model}" 
+                           placeholder="Enter model" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="yearOfManufacture">YEAR OF MANUFACTURE</label>
+                    <input type="number" id="yearOfManufacture" th:field="*{yearOfManufacture}" 
+                           placeholder="Enter year" min="1900" max="2099" required>
+                </div>
+
+                <button type="submit" class="submit-btn">SUBMIT</button>
+            </form>
+
+            <div class="button-group">
+                <form method="GET" th:action="@{/my-cars}">
+                    <button type="submit" class="view-btn">MY CARS</button>
+                </form>
+
+                <form method="GET" th:action="@{/all-cars}">
+                    <button type="submit" class="view-btn">ALL CARS</button>
+                </form>
+            </div>
+
+            <form method="GET" th:action="@{/logout}">
+                <button type="submit" class="logout-btn">LOGOUT</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

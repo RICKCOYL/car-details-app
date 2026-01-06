@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Details - List</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="list-container">
+        <div class="list-box">
+            <h1 th:if="${!isAdmin}">MY CARS</h1>
+            <h1 th:if="${isAdmin}">ALL CARS</h1>
+
+            <div th:if="${cars.isEmpty()}" class="empty-message">
+                <p>No cars found. <a th:href="@{/car-form}">Add a new car</a></p>
+            </div>
+
+            <table th:if="${!cars.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>VEHICLE</th>
+                        <th>MODEL</th>
+                        <th>YEAR</th>
+                        <th th:if="${isAdmin}">ENTERED BY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="car : ${cars}">
+                        <td th:text="${car.vehicleMake}"></td>
+                        <td th:text="${car.model}"></td>
+                        <td th:text="${car.yearOfManufacture}"></td>
+                        <td th:if="${isAdmin}" th:text="${car.createdByUser.username}"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="button-group">
+                <form method="GET" th:action="@{/car-form}">
+                    <button type="submit" class="back-btn">BACK TO FORM</button>
+                </form>
+
+                <form method="GET" th:action="@{/logout}">
+                    <button type="submit" class="logout-btn">LOGOUT</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
