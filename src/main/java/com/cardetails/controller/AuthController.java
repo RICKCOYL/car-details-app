@@ -1,6 +1,7 @@
 package com.cardetails.controller;
 
 import com.cardetails.entity.User;
+import com.cardetails.model.Role;
 import com.cardetails.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,8 @@ public class AuthController {
             User authenticatedUser = user.get();
             session.setAttribute("user", authenticatedUser);
             session.setAttribute("userId", authenticatedUser.getId());
-            session.setAttribute("userRole", authenticatedUser.getRole());
+            Role role = authenticatedUser.getRole();
+            session.setAttribute("userRole", role);
             return "redirect:/car-form";
         }
         

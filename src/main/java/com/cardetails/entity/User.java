@@ -1,5 +1,6 @@
 package com.cardetails.entity;
 
+import com.cardetails.model.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +25,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

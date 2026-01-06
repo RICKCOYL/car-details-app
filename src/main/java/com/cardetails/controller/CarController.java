@@ -2,6 +2,7 @@ package com.cardetails.controller;
 
 import com.cardetails.entity.Car;
 import com.cardetails.entity.User;
+import com.cardetails.model.Role;
 import com.cardetails.service.CarService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class CarController {
 
         carService.saveCar(car, user);
 
-        String role = (String) session.getAttribute("userRole");
+        Role role = resolveRole(session.getAttribute("userRole"));
         return carService.determinePostSaveRedirect(role);
     }
 
@@ -61,7 +62,7 @@ public class CarController {
             return "redirect:/login";
         }
 
-        String role = (String) session.getAttribute("userRole");
+        Role role = resolveRole(session.getAttribute("userRole"));
 
         CarService.CarListView carListView = carService.getCarsForAdminSection(user, role);
         if (!carListView.isAdminView()) {
@@ -79,5 +80,15 @@ public class CarController {
         List<Car> cars = carService.getAllCars();
         return ResponseEntity.ok(cars);
     }
+
+        private Role resolveRole(Object roleAttr) {
+            if (roleAttr instanceof Role) {
+                return (Role) roleAttr;
+            }
+            if (roleAttr instanceof String str) {
+                return Role.from(str);
+            }
+            return Role.USER;
+        }
 
 }
