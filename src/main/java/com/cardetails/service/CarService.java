@@ -14,11 +14,6 @@ import java.util.Objects;
 public class CarService {
 
     private final CarRepository carRepository;
-
-    /**
-     * Saves a car for a given user.
-     * Business logic: Associates the car with the user creating it.
-     */
     public Car saveCar(Car car, User creator) {
         Objects.requireNonNull(car, "Car cannot be null");
         Objects.requireNonNull(creator, "Creator user cannot be null");
@@ -26,62 +21,50 @@ public class CarService {
         car.setCreatedByUser(creator);
         return carRepository.save(car);
     }
-
-    /**
-     * Retrieves all cars created by a specific user.
-     * Business logic: Enforces user isolation for data retrieval.
-     */
     public List<Car> getCarsByUser(User user) {
         Objects.requireNonNull(user, "User cannot be null");
         return carRepository.findByCreatedByUser(user);
     }
 
-    /**
-     * Retrieves all cars in the system.
-     * Business logic: Only admins should call this method (checked by controller).
-     */
     public List<Car> getAllCars() {
         return carRepository.findAll();
     }
 
-    /**
-     * Retrieves a car by its ID.
-     * Business logic: Returns null if not found.
-     */
-    public Car getCarById(Integer id) {
-        Objects.requireNonNull(id, "Car ID cannot be null");
-        return carRepository.findById(id).orElse(null);
+    public boolean isAdminRole(String userRole) {
+        if (userRole == null) {
+            return false;
+        }
+        return "ADMIN".equals(userRole);
     }
 
-    /**
-     * Determines whether a user can view a specific car.
-     * Business logic: Admin can view all cars, regular users can only view their own cars.
-     */
-    public boolean canUserViewCar(Car car, User user, String userRole) {
-        Objects.requireNonNull(car, "Car cannot be null");
-        Objects.requireNonNull(user, "User cannot be null");
-        
-        if ("ADMIN".equals(userRole)) {
-            return true;
-        }
-        
-        return car.getCreatedByUser().getId().equals(user.getId());
+    public String determinePostSaveRedirect(String userRole) {
+        return isAdminRole(userRole) ? "redirect:/all-cars" : "redirect:/my-cars";
     }
 
-    /**
-     * Determines whether a user can edit a specific car.
-     * Business logic: Only the creator or admin can edit a car.
-     */
-    public boolean canUserEditCar(Car car, User user, String userRole) {
-        Objects.requireNonNull(car, "Car cannot be null");
-        Objects.requireNonNull(user, "User cannot be null");
-        
-        if ("ADMIN".equals(userRole)) {
-            return true;
+    public CarListView getCarsForAdminSection(User currentUser, String userRole) {
+        Objects.requireNonNull(currentUser, "Current user cannot be null");
+
+        boolean admin = isAdminRole(userRole);
+        List<Car> cars = admin ? getAllCars() : getCarsByUser(currentUser);
+        return new CarListView(cars, admin);
+    }
+
+    public static class CarListView {
+        private final List<Car> cars;
+        private final boolean adminView;
+
+        public CarListView(List<Car> cars, boolean adminView) {
+            this.cars = cars;
+            this.adminView = adminView;
         }
-        
-        return car.getCreatedByUser().getId().equals(user.getId());
+
+        public List<Car> getCars() {
+            return cars;
+        }
+
+        public boolean isAdminView() {
+            return adminView;
+        }
     }
 
 }
-

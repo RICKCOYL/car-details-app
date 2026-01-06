@@ -3,7 +3,6 @@ package com.cardetails.controller;
 import com.cardetails.entity.Car;
 import com.cardetails.entity.User;
 import com.cardetails.service.CarService;
-import com.cardetails.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.util.List;
 public class CarController {
 
     private final CarService carService;
-    private final UserService userService;
 
     @GetMapping("/car-form")
     public String carForm(HttpSession session, Model model) {
@@ -36,16 +34,11 @@ public class CarController {
         if (user == null) {
             return "redirect:/login";
         }
-        
-        // Delegate business logic to service layer
+
         carService.saveCar(car, user);
-        
+
         String role = (String) session.getAttribute("userRole");
-        if ("ADMIN".equals(role)) {
-            return "redirect:/all-cars";
-        } else {
-            return "redirect:/my-cars";
-        }
+        return carService.determinePostSaveRedirect(role);
     }
 
     @GetMapping("/my-cars")
@@ -55,7 +48,6 @@ public class CarController {
             return "redirect:/login";
         }
         
-        // Delegate business logic to service layer
         List<Car> cars = carService.getCarsByUser(user);
         model.addAttribute("cars", cars);
         model.addAttribute("isAdmin", false);
@@ -68,24 +60,22 @@ public class CarController {
         if (user == null) {
             return "redirect:/login";
         }
-        
+
         String role = (String) session.getAttribute("userRole");
-        // Delegate authorization check to service layer (business logic)
-        if (!"ADMIN".equals(role)) {
+
+        CarService.CarListView carListView = carService.getCarsForAdminSection(user, role);
+        if (!carListView.isAdminView()) {
             return "redirect:/my-cars";
         }
-        
-        // Delegate data retrieval to service layer
-        List<Car> cars = carService.getAllCars();
-        model.addAttribute("cars", cars);
-        model.addAttribute("isAdmin", true);
+
+        model.addAttribute("cars", carListView.getCars());
+        model.addAttribute("isAdmin", carListView.isAdminView());
         return "car-list";
     }
 
     @GetMapping("/vehicles/all")
     @ResponseBody
     public ResponseEntity<?> getAllVehicles() {
-        // Delegate data retrieval to service layer
         List<Car> cars = carService.getAllCars();
         return ResponseEntity.ok(cars);
     }

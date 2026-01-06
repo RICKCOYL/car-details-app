@@ -25,7 +25,7 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // DATA_ENTRY or ADMIN
+    private String role;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
