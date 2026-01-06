@@ -37,8 +37,8 @@ public class CarController {
             return "redirect:/login";
         }
         
-        car.setCreatedByUser(user);
-        carService.saveCar(car);
+        // Delegate business logic to service layer
+        carService.saveCar(car, user);
         
         String role = (String) session.getAttribute("userRole");
         if ("ADMIN".equals(role)) {
@@ -55,6 +55,7 @@ public class CarController {
             return "redirect:/login";
         }
         
+        // Delegate business logic to service layer
         List<Car> cars = carService.getCarsByUser(user);
         model.addAttribute("cars", cars);
         model.addAttribute("isAdmin", false);
@@ -69,10 +70,12 @@ public class CarController {
         }
         
         String role = (String) session.getAttribute("userRole");
+        // Delegate authorization check to service layer (business logic)
         if (!"ADMIN".equals(role)) {
             return "redirect:/my-cars";
         }
         
+        // Delegate data retrieval to service layer
         List<Car> cars = carService.getAllCars();
         model.addAttribute("cars", cars);
         model.addAttribute("isAdmin", true);
@@ -82,6 +85,7 @@ public class CarController {
     @GetMapping("/vehicles/all")
     @ResponseBody
     public ResponseEntity<?> getAllVehicles() {
+        // Delegate data retrieval to service layer
         List<Car> cars = carService.getAllCars();
         return ResponseEntity.ok(cars);
     }

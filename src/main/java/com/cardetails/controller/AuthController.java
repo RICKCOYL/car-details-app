@@ -31,12 +31,15 @@ public class AuthController {
     public String login(@RequestParam String username, 
                         @RequestParam String password, 
                         HttpSession session) {
+        // Delegate authentication to service layer
         Optional<User> user = userService.authenticate(username, password);
         
         if (user.isPresent()) {
-            session.setAttribute("user", user.get());
-            session.setAttribute("userId", user.get().getId());
-            session.setAttribute("userRole", user.get().getRole());
+            User authenticatedUser = user.get();
+            // Populate session with user information
+            session.setAttribute("user", authenticatedUser);
+            session.setAttribute("userId", authenticatedUser.getId());
+            session.setAttribute("userRole", authenticatedUser.getRole());
             return "redirect:/car-form";
         }
         
